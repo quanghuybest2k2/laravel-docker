@@ -20,9 +20,11 @@ docker ps
 docker exec -it <CONTAINER ID> bash
 ```
 
-CONTAINER ID là id của container đang chạy, sau khi gõ lệnh docker ps vừa rồi
-ví dụ: docker exec -it 120737b4bed8 bash
-Terminal sẽ chuyển sang wsl dạng:
+###### CONTAINER ID của laravel-docker-www
+
+###### ví dụ: docker exec -it 8eea9907a013 bash
+
+###### Terminal sẽ chuyển sang wsl dạng: root@8eea9907a013:/#
 
 ```shell
 cd /var/www/html/example-app
@@ -40,8 +42,12 @@ composer install
 php artisan key:generate
 ```
 
+```shell
+php artisan migrate:fresh
+```
+
 ## Truy cập địa chỉ:
 
-http://localhost:9000/public
+http://localhost/example-app/public
 
 <!-- docker-compose exec app php artisan key:generate -->
