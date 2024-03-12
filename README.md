@@ -5,10 +5,6 @@
 Mở terminal và gõ các lệnh:
 
 ```shell
-cp .env.example .env
-```
-
-```shell
 docker-compose build --no-cache
 ```
 
@@ -29,7 +25,11 @@ ví dụ: docker exec -it 120737b4bed8 bash
 Terminal sẽ chuyển sang wsl dạng:
 
 ```shell
-cd /var/www/html
+cd /var/www/html/example-app
+```
+
+```shell
+cp .env.example .env
 ```
 
 ```shell
