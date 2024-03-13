@@ -1,70 +1,55 @@
 FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y apache2 mysql-server
 
-RUN apt-get update -y
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+ENV APACHE_LOG_DIR /var/log/apache2
+ENV APACHE_PID_FILE /var/run/apache2.pid
+ENV APACHE_RUN_DIR /var/run/apache2
+ENV APACHE_LOCK_DIR /var/lock/apache2
+RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
+    ln -sf /dev/stderr /var/log/apache2/error.log
+RUN mkdir -p $APACHE_RUN_DIR $APACHE_LOCK_DIR $APACHE_LOG_DIR
 
-#Installing apache in non-interactive mode
-ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get -y install curl php-fpm libapache2-mod-php php php-common php-xml php-mysql php-gd php-mbstring php-tokenizer php-json php-bcmath php-curl php-zip unzip && a2enmod rewrite
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
-RUN apt-get install apache2 -y
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
+RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-#Installing PHP v 8.2
-RUN apt-get -y install software-properties-common && \
-    add-apt-repository ppa:ondrej/php && \
-    apt-get update && \
-    apt-get -y install php8.2
+VOLUME [ "/var/www/html" ]
+WORKDIR /var/www/html
 
-#Install required PHP extensions
-RUN apt-get install -y php8.2-bcmath php8.2-fpm php8.2-xml php8.2-mysql php8.2-zip php8.2-intl php8.2-ldap php8.2-gd php8.2-cli php8.2-bz2 php8.2-curl php8.2-mbstring php8.2-pgsql php8.2-opcache php8.2-soap php8.2-cgi
-
-# RUN docker-php-ext-install pdo pdo_mysql
-
-#Install Composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php composer-setup.php
-RUN php -r "unlink('composer-setup.php');"
-RUN mv composer.phar /usr/local/bin/composer
+RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
 
-CMD ["apachectl", "-D", "FOREGROUND"]
-=================================================================
----
-version: "2"
-services:
-    www:
-        build: .
-        ports:
-            - "80:80"
-        volumes:
-            - ./www:/var/www/html/
-        links:
-            - db
-        networks:
-            - default
-    db:
-        image: mysql:8.3.0
-        ports:
-            - "3306:3306"
-        environment:
-            MYSQL_DATABASE: myDb
-            MYSQL_USER: huy
-            MYSQL_PASSWORD: huy
-            MYSQL_ROOT_PASSWORD: huy
-        volumes:
-            - ./dump:/docker-entrypoint-initdb.d
-            - persistent:/var/lib/mysql
-        networks:
-            - default
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        links:
-            - db:db
-        ports:
-            - 82:80
-        environment:
-            MYSQL_USER: huy
-            MYSQL_PASSWORD: huy
-            MYSQL_ROOT_PASSWORD: huy
-volumes:
-    persistent:
+ENTRYPOINT [ "/usr/sbin/apache2" ]
+CMD ["-D", "FOREGROUND"]
 
+===============================================
+version: '2'
+services:
+  webserver:
+    build: .
+    ports:
+      - '80:80'
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./apache.conf:/etc/apache2/sites-available/000-default.conf
+    links:
+      - db
+  db:
+    image: mysql:8.3
+    volumes:
+      - "./data/db:/var/lib/mysql"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel_db
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    ports:
+      - "3306:3306"

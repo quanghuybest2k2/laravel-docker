@@ -36,8 +36,10 @@ cd /var/www/html
 cp .env.example .env
 ```
 
+<!-- composer install -->
+
 ```shell
-composer install
+composer install --ignore-platform-reqs
 ```
 
 ```shell
@@ -52,7 +54,7 @@ php artisan migrate:fresh
 
 ##### Web app
 
-http://localhost/public
+http://localhost
 
 #### PHPMYADMIN
 

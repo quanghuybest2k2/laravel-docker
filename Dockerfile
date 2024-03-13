@@ -1,29 +1,35 @@
 FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y apache2 mysql-server
 
-RUN apt-get update -y
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+ENV APACHE_LOG_DIR /var/log/apache2
+ENV APACHE_PID_FILE /var/run/apache2.pid
+ENV APACHE_RUN_DIR /var/run/apache2
+ENV APACHE_LOCK_DIR /var/lock/apache2
+RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
+    ln -sf /dev/stderr /var/log/apache2/error.log
+RUN mkdir -p $APACHE_RUN_DIR $APACHE_LOCK_DIR $APACHE_LOG_DIR
 
-#Installing apache in non-interactive mode
-ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get -y install curl php-fpm libapache2-mod-php php php-common php-xml php-mysql php-gd php-mbstring php-tokenizer php-json php-bcmath php-curl php-zip unzip && a2enmod rewrite
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
-RUN apt-get install apache2 -y
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
+RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-#Installing PHP v 8.2
-RUN apt-get -y install software-properties-common && \
-    add-apt-repository ppa:ondrej/php && \
-    apt-get update && \
-    apt-get -y install php8.2
+# #Install Composer
+# RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+# RUN php composer-setup.php
+# RUN php -r "unlink('composer-setup.php');"
+# RUN mv composer.phar /usr/local/bin/composer
 
-#Install required PHP extensions
-RUN apt-get install -y php8.2-bcmath php8.2-fpm php8.2-xml php8.2-mysql php8.2-zip php8.2-intl php8.2-ldap php8.2-gd php8.2-cli php8.2-bz2 php8.2-curl php8.2-mbstring php8.2-pgsql php8.2-opcache php8.2-soap php8.2-cgi
+VOLUME [ "/var/www/html" ]
+WORKDIR /var/www/html
 
-# RUN docker-php-ext-install pdo pdo_mysql
-
-#Install Composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php composer-setup.php
-RUN php -r "unlink('composer-setup.php');"
-RUN mv composer.phar /usr/local/bin/composer
+RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
 
-CMD ["apachectl", "-D", "FOREGROUND"]
+ENTRYPOINT [ "/usr/sbin/apache2" ]
+CMD ["-D", "FOREGROUND"]
