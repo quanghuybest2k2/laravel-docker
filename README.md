@@ -2,6 +2,8 @@
 
 ## Hướng dẫn cài đặt
 
+### Mở dự án bằng VSCODE
+
 Mở terminal và gõ các lệnh:
 
 ```shell
@@ -27,7 +29,7 @@ docker exec -it <CONTAINER ID> bash
 ###### Terminal sẽ chuyển sang wsl dạng: root@8eea9907a013:/#
 
 ```shell
-cd /var/www/html/example-app
+cd /var/www/html
 ```
 
 ```shell
@@ -48,6 +50,16 @@ php artisan migrate:fresh
 
 ## Truy cập địa chỉ:
 
-http://localhost/example-app/public
+##### Web app
+
+http://localhost/public
+
+#### PHPMYADMIN
+
+http://localhost:82
+
+#### username: huy
+
+#### password: huy
 
 <!-- docker-compose exec app php artisan key:generate -->

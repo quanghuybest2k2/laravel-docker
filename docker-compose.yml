@@ -6,7 +6,7 @@ services:
         ports:
             - "80:80"
         volumes:
-            - ./www:/var/www/html/
+            - .:/var/www/html/
         links:
             - db
         networks:
@@ -37,4 +37,3 @@ services:
             MYSQL_ROOT_PASSWORD: huy
 volumes:
     persistent:
-
