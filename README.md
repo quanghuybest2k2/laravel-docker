@@ -15,31 +15,15 @@ docker-compose up -d
 ```
 
 ```shell
-docker ps
-```
-
-```shell
-docker exec -it <CONTAINER ID> bash
-```
-
-###### CONTAINER ID của laravel-docker-www
-
-###### ví dụ: docker exec -it 8eea9907a013 bash
-
-###### Terminal sẽ chuyển sang wsl dạng: root@8eea9907a013:/#
-
-```shell
-cd /var/www/html
+docker exec -it laravel-docker-www-1 bash
 ```
 
 ```shell
 cp .env.example .env
 ```
 
-<!-- composer install -->
-
 ```shell
-composer install --ignore-platform-reqs
+composer install
 ```
 
 ```shell
@@ -47,7 +31,7 @@ php artisan key:generate
 ```
 
 ```shell
-php artisan migrate:fresh
+php artisan migrate:fresh --seed
 ```
 
 ## Truy cập địa chỉ:
@@ -63,5 +47,3 @@ http://localhost:82
 #### username: huy
 
 #### password: huy
-
-<!-- docker-compose exec app php artisan key:generate -->
