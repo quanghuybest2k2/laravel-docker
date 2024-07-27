@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y apache2 mysql-server
+RUN apt-get update && apt-get install -y apache2
 
 ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
@@ -18,18 +18,9 @@ COPY apache.conf /etc/apache2/sites-available/000-default.conf
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
 RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-# #Install Composer
-# RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-# RUN php composer-setup.php
-# RUN php -r "unlink('composer-setup.php');"
-# RUN mv composer.phar /usr/local/bin/composer
-
-VOLUME [ "/var/www/html" ]
 WORKDIR /var/www/html
 
 RUN chown -R www-data:www-data /var/www/html
-
-EXPOSE 80
 
 ENTRYPOINT [ "/usr/sbin/apache2" ]
 CMD ["-D", "FOREGROUND"]

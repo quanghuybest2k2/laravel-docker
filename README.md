@@ -1,21 +1,15 @@
 # laravel-docker
 
-## Hướng dẫn cài đặt
+## Open project with VSCODE
 
-### Mở dự án bằng VSCODE
-
-Mở terminal và gõ các lệnh:
+### Open terminal and type:
 
 ```shell
-docker-compose build --no-cache
+docker-compose up -d --build
 ```
 
 ```shell
-docker-compose up -d
-```
-
-```shell
-docker exec -it sample-project-202403-huy-www-1 bash
+docker exec -it web bash
 ```
 
 ```shell
@@ -42,7 +36,7 @@ php artisan key:generate
 php artisan migrate:fresh --seed
 ```
 
-## Truy cập địa chỉ:
+## Url:
 
 ##### Web app
 

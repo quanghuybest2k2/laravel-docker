@@ -1,19 +1,20 @@
----
-version: "2"
+version: "3.8"
 services:
     www:
         build: .
+        container_name: web
         ports:
             - "80:80"
         working_dir: /var/www/html
         volumes:
-        - ./:/var/www/html
-        - ./apache.conf:/etc/apache2/sites-available/000-default.conf
+            - ./:/var/www/html
+            - ./apache.conf:/etc/apache2/sites-available/000-default.conf
         links:
             - db
         networks:
             - default
     db:
+        container_name: db
         image: mysql:8.3.0
         ports:
             - "3306:3306"
@@ -28,6 +29,7 @@ services:
         networks:
             - default
     phpmyadmin:
+        container_name: phpmyadmin
         image: phpmyadmin/phpmyadmin
         links:
             - db:db
